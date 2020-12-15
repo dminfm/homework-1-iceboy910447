@@ -33,9 +33,15 @@ For the following series, find an appropriate Box-Cox (?BoxCox) transformation i
 
 ```{r}
 # todo
- 
+ plot(usnetelec)
+ plot(usgdp)
+ plot(mcopper)# Transformation hilfreich
+ lambda = BoxCox.lambda(mcopper)
+ plot(BoxCox(mcopper,lambda))
+ plot(enplanements) # Transformation möglicherweise hilfreich
+ lambda_zwei = BoxCox.lambda(enplanements)
+ plot(BoxCox(enplanements,lambda_zwei))
 ```
-
 
 # Exercise 2
 
@@ -43,10 +49,12 @@ Why is a Box-Cox transformation unhelpful for the `cangas` data?
 
 ```{r}
 # todo
- 
+ plot(cangas) # Transformation möglicherweise hilfreich
+ lambda_drei = BoxCox.lambda(cangas)
+ plot(BoxCox(cangas,lambda_drei))
 ```
 Your answer:
-
+nicht hilfreich, da nur hilfreich bei Zeitreihen, bei denen die Varianz mit zunehmender Zeit steigt. Wie an der bauchigen Form der Varianz zu sehen ist, ist dies bei 'cangas' nicht der Fall.
 
 
 # Exercise 3
@@ -56,9 +64,12 @@ What Box-Cox transformation would you select for **your** retail data from Exerc
 ```{r}
 # Example 
 retaildata <- readxl::read_excel("data/retail.xlsx", skip=1)
-myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))
+myts <- ts(retaildata[,"A3349627V"], frequency=12, start=c(1982,4))
+lambda_vier = BoxCox.lambda(myts)
+print(lambda_vier)
 autoplot(myts)
 myts %>% BoxCox(lambda = 0) %>% autoplot()
+myts %>% BoxCox(lambda = -0.057966) %>% autoplot()
 ```
 
 From visual inspection, a log transformation would be appropriate here. It also makes sense, as retail expenditure is likely to increase proportionally to population, and therefore the seasonal fluctuations are likely to be proportional to the level of the series. It has the added advantage of being easier to explain than some other transformations. Finally, it is relatively close to the automatically selected value of `BoxCox.lambda(myts)` $= `r round(BoxCox.lambda(myts),3)`$.
@@ -66,6 +77,7 @@ From visual inspection, a log transformation would be appropriate here. It also 
 If you have selected a different series from the retail data set, you might choose a different transformation.
 
 Your answer:
+Die visuelle Darstellung zeigt für die eigene Zeitreihe dass auch hier die logharithmische Umwandlung sinnvoll ist. Die Varianz die nach der Umwandlung zu sehen ist, schein deutlich gleichmäßiger über die Zeit zu bleiben und in einigen Bereichen scheint ein linearer Trend vorzuliegen, der für die Vorhersage genutzt werden könnte.
 
 
 # Exercise 4
@@ -74,18 +86,23 @@ Calculate the residuals (?residuals) from a seasonal naive forecast applied to t
 
 ```{r}
 # todo
- 
+ (?residuals)
+help(snaive)
+help("autolayer")
+beer_forecast = snaive(ausbeer, h=40)
+autoplot(ausbeer)+autolayer(beer_forecast)
 ```
 
 Test if the residuals are white noise and normally distributed.
 
 ```{r}
-#checkresiduals(fc)
+checkresiduals(beer_forecast)
 ```
 
 What do you conclude?
 
 Your answer:
+Residuals ergeben kein White Noise und sind nicht normalverteilt. Daher scheint es statistisch relevante Abweichungen zwischen den Daten und der Vorhersage zu geben, die auf eine relevante Korrelation hindeuten, die durch das Modell nicht erfasst wurde.
 
 
 # Exercise 5
@@ -94,23 +111,23 @@ Are the following statements true or false? Explain your answer.
 
 > a. Good forecast methods should have normally distributed residuals.
 
-Your answer:
+Your answer: Ja, da bei guter Vorhersage die Abweichung des Modells gegenüber der Realität nur durch zufall bedingt sind. Entsprechende Abweichungen so wohl nach oben als auch nach unten sind gleich wahrscheinlich. Daher ist von einer normalverteilten Abweichung auszugehen.
 
 > b. A model with small residuals will give good forecasts.
 
-Your answer:
+Your answer: Ja, da das Modell mit den kleinsten Abweichungen zu den bisher gemessenen Daten am wahrscheinlichsten alle relevanten Zusammenhänge korrekt erfasst hat. Durch zufallsbedingte Ereignisse kann es jedoch zu relevanten Abweichungen für die zukünftigen Daten geben, so dass es auch nicht unmöglich ist, dass ein anderes Modell im Rückblick betrachtet näher an den zukünftigen Werten lag. Da sich diese zufallsbedingten Ereignisse (bspw Extremwetterlagen etc.) jedoch nicht oder nur schwer vorhersagen lassen wird das Modell mit den kleinsten Abweichungen bevorzugt.
 
 > c. The best measure of forecast accuracy is MAPE.
 
-Your answer:
+Your answer: MAPE ist nicht die beste Methodik, da die Mittlere Absolute Prozentuale Abweichung durch Ausreiser in der Modellvorhersage stark beeinflusst wird. Besser geeignet erscheint für solche Fälle die RMSE Methode, bei der derartige Fehler anders gewichtet werden.
 
 > d. If your model doesn't forecast well, you should make it more complicated.
 
-Your answer:
+Your answer: Nicht zwingend. Zu komplexe Modelle können eventuell einfache Sachverhalte nicht korrekt erfassen. Zudem benötigen komplexe Modelle meist mehr Daten, die eventuell für das vorliegen Problem nicht vorhanden sind. In diesem Fall kann eine Vereinfachung des Modells zu besseren Ergebnissen führen. Eine generelle Aussage ist daher nicht möglich. Die notwendige Komplexität hängt von verschiedenen Faktoren ab.
 
 > e. Always choose the model with the best forecast accuracy as measured on the test set.
 
-Your answer:
+Your answer:Grundsätzlich ja, jedoch kann es vorkommen das der Testdatensatz zufällig so gewählt wurde, dass das Modell gut zu den Eigeneschaften des Testdatensatzes, welche nicht den Eigenschaften des Gesamtdatensatzes entsprechen müssen, passt, dies aber nicht für alle Teildatensätze zutrifft. Gebenfalls ist eine erneute Überprüfung auf einem weiteren Teildatensatz sinnvoll. Ebenso könnte je nach Anwendungsfall ein Modell mit einer geringeren forecast accurace sinnvoll sein, dass seinerseits jedoch auf spezifische Ereignisse besser reagiert. Durch die Bessere Anpassung an derartige Ereignisse bzw. die größere Robustheit gegen Ausreißer sowie die größere Ungenauigkeit der Vorhersage werden derartige Vorhersageergebnisse mit größere Toleranz bzw. höherem Risiko betrachtet, was im Falle des Eintretens solcher Ereignisse bzw. Ausreißer beispielsweise im Fall der Finanzbranche eher vor einem Totalverlust durch bewussteres Risikomanagement schützt.
 
 # Exercise 6
 
@@ -120,7 +137,7 @@ Split the data into two parts using
 
 ```{r}
 retaildata <- readxl::read_excel("data/retail.xlsx", skip=1)
-myts <- ts(retaildata[,"A3349873A"], frequency=12, start=c(1982,4))
+myts <- ts(retaildata[,"A3349627V"], frequency=12, start=c(1982,4))
 myts.train <- window(myts, end=c(2010,12))
 myts.test <- window(myts, start=2011)
 ```
@@ -137,7 +154,11 @@ Calculate forecasts using `snaive` applied to `myts.train`.
 
 ```{r}
 # todo
- 
+ myts_fc = snaive(myts.train, h=35)
+autoplot(myts) +
+  autolayer(myts.train, series="Training") +
+  autolayer(myts.test, series="Test")+
+  autolayer(myts_fc, series="Vorhersage")
 ```
 
 Compare the accuracy of your forecasts against the actual values stored in `myts.test`.
@@ -145,7 +166,9 @@ Compare the accuracy of your forecasts against the actual values stored in `myts
 
 ```{r}
 # todo
- 
+(?accuracy)
+ accuracy(myts_fc, myts.test)
+
 ```
 
 The number to look at here is the test set RMSE of 71.443. That provides a benchmark for comparison when we try other models.
@@ -154,11 +177,11 @@ Check the residuals. Do the residuals appear to be uncorrelated and normally dis
 
 ```{r}
 # todo
- 
+ checkresiduals(myts_fc)
 ```
 
 Your answer:
-
+Nein, da sich für Lag Werte Unter 120 sehr hohe Korrelationen ergeben, die über den Bereich des White Noise hinausgehen, und die Verteilung der Residuals nicht einer normalerverteilung entspricht
 
 How sensitive are the accuracy measures to the training/test split?
 
@@ -179,7 +202,10 @@ Compute one year of forecasts for each training set using the `snaive()` method.
 
 ```{r}
 # todo
- 
+fc1 =  snaive(train1,h= 4)
+fc2 =  snaive(train2, h = 4)
+fc3 =  snaive(train3, h = 4)
+
 ```
 
 Use `accuracy()` to compare the MAPE over the three test sets. Comment on these.
@@ -188,8 +214,14 @@ First we will copy the actual data into a variable. Then we can do an accuracy c
 ```{r}
 qld <- visnights[, "QLDMetro"]
 # todo
- 
+ accuracy(fc1,qld)
+ accuracy(fc2,qld)
+ accuracy(fc3,qld)
 ```
+fc1 scheint die besten MAPE Werte zu besitzen, Sowohl für den Test als auch den Trainingsdatensatz ergibt sich bei fc1 die besten MAPE Ergebnisse, was daraufhindeutet, dass dieses Modell besser abschneidet. 
+Da fc1 die längeste und fc3 die kürzeste Zeitreihe verwendet, alle Daten jedoch auf der selben Zeitreihe basieren, und alle Vorhersagen das selbe Modell nutzen, scheint es eine gute Korrelation zwischen Länge der Zeitreihe der Trainingsdaten und der Genauigkeit der Vorhersage zu geben
+
+
 
 This should give similar results to this consolidated results table.
 
@@ -211,7 +243,7 @@ Produce a time plot of the series.
 
 ```{r}
 # todo
- 
+ autoplot(dowjones)
 ```
 
 Produce forecasts using the drift method and plot them.
@@ -221,7 +253,9 @@ Let's assume we want to forecast the next 5, 10 and 15 values.
 ```{r}
 dowfc1 <- rwf(dowjones, drift=TRUE, h=5)
 # todo
- 
+dowfc1 <- rwf(dowjones, drift=TRUE, h=5)
+dowfc2 <- rwf(dowjones, drift=TRUE, h=10) 
+dowfc3 <- rwf(dowjones, drift=TRUE, h=15) 
 ```
 
 Then we can plot these values.
@@ -258,8 +292,17 @@ The time series isn't seasonal, so the seasonal naive method is not viable. Howe
 
 ```{r}
 # todo
- 
+ dowfc_mean = meanf(dowjones)
+ dowfc_naive = naive(dowjones)
+ autoplot(dowjones) +
+  autolayer(dowfc3, PI=FALSE, series="Drift 15") +
+  autolayer(dowfc_mean, PI=FALSE, series="mean") +
+  autolayer(dowfc_naive, PI=FALSE, series="naive") +
+   xlab("Time") + ylab("Closing Price (US$)") +
+  ggtitle("Dow Jones index") +
+  guides(colour=guide_legend(title="Forecast"))
 ```
+Drift erscheint am besten, da der Dow Jones über die Zeit steigt. Mean berücksichtigt den Anstieg für die Zukunft nicht, mean liegt sogar sehr weit vom letzten aufgezeichneten Wert und berücksichtig den Trend ebenfalls nicht. Somit ist nur Drift scheinbar gut geeignet.
 
 The three values will be very different here. The Mean will use the data set, so is unlikely to follow the current trendline.
 
@@ -271,14 +314,20 @@ Produce some plots of the data in order to become familiar with it.
 
 ```{r}
 # todo
- 
+ print(ibmclose)
+autoplot(ibmclose)
+ggAcf(ibmclose)
+#ggsubseriesplot(ibmclose)
+#ggseasonplot(ibmclose)
+gglagplot(ibmclose)
 ```
 
 Split the data into a training set of 300 observations and a test set of 69 observations.
 
 ```{r}
 # todo
- 
+ ibm.train <- window(ibmclose, end = 300)
+ibm.test <- window(ibmclose, start = 301)
 ```
 
 Try using various benchmark methods to forecast the training set and compare the results on the test set. Which method did best?
@@ -287,6 +336,8 @@ Try using various benchmark methods to forecast the training set and compare the
 # remove eval=FALSE
 h <- length(ibm.test)
 m.f <- meanf(ibm.train, h=h)
+rw.f <- naive(ibm.train, h=h)
+rwd.f <- rwf(ibm.train, drift = TRUE, h=h)
 # todo
  
 
@@ -300,6 +351,9 @@ autoplot(ibmclose) +
 
 # accuracy(m.f,ibm.test)
 # todo
+ accuracy(m.f,ibm.test)
+ accuracy(rw.f,ibm.test)
+ accuracy(rwd.f,ibm.test)
  
 ```
 
@@ -308,9 +362,11 @@ Check the residuals of your preferred method. Do they resemble white noise?
 
 ```{r}
 # todo
+checkresiduals(rwd.f)
  
 ```
 
+Mit Ausnahme einiger ausreiser im acf plot scheint es sich meist um whitenoise zu handeln. Die Verteilung der Residuals wirkt jedoch auch nur auf den ersten Blick normalverteilt. Der Sprung bei minus 10 sowie der Ausreiser nahe Null wiederspricht jedoch der Normalverteilung deutlich
 
 # Exercise 10
 
@@ -320,13 +376,20 @@ Produce some plots of the data in order to become familiar with it.
 
 ```{r}
 # todo
- 
+autoplot(hsales)
+ggAcf(hsales)
+ggsubseriesplot(hsales)
+ggseasonplot(hsales)
+gglagplot(hsales)
+print(hsales)
 ```
 
 Split the `hsales` data set into a training set and a test set, where the test set is the last two years of data.
 
 ```{r}
 # todo
+ hsales.train <- window(hsales,end = 1993)
+ hsales.test <- window(hsales,start = 1994)
  
 ```
 
@@ -334,8 +397,30 @@ Try using various benchmark methods to forecast the training set and compare the
 
 ```{r}
 # todo
+h <- length(hsales.train)
+m.f <- meanf(hsales.train, h=h)
+rw.f <- naive(hsales.train, h=h)
+rwd.f <- rwf(hsales.train, drift = TRUE, h=h)
+s.f <- snaive(hsales.train, h= h)
+ 
+autoplot(hsales) +
+  xlab("Day") +
+  ggtitle("Daily closing IBM stock prices") +
+  autolayer(m.f$mean, col=2, series="Mean method") +
+  autolayer(rw.f$mean, col=3, series="Naive method") +
+  autolayer(rwd.f$mean, col=4, series="Drift method") +
+  autolayer(s.f$mean, col=5, series="season method")
+
+# accuracy(m.f,ibm.test)
+# todo
+ accuracy(m.f,hsales.test)
+ accuracy(rw.f,hsales.test)
+ accuracy(rwd.f,hsales.test)
+ accuracy(s.f,hsales.test)
  
 ```
+season forecast war am besten!
+
 
 In terms of accuracy measures on the test set, the seasonal naive method does better.
 
@@ -343,7 +428,7 @@ Check the residuals of your preferred method. Do they resemble white noise?
 
 ```{r eval = FALSE}
 # remove eval=FALSE
-checkresiduals(sn.f)
+checkresiduals(s.f)
 ```
-
+Nein, eindeutig kein White Noise wie beim ACF Plot an der stark positiven Korrelation am Anfang und an der gekippte Normalverteilung zu sehen ist.
 

@@ -26,16 +26,19 @@ library(fpp2)
 Use the help menu to explore what the series `gold`, `woolyrnq` and `gas` represent. These are available in the `forecast` package.
 
 ```{r, echo=TRUE, cache=TRUE, eval=FALSE}
-help(gold)
+help(gas)
 # to do
-
+help(gold)
+help(woolyrnq)
 ```
 
 Use `autoplot` to plot each of these in separate plots.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(gold)
+autoplot(woolyrnq)
+autoplot(gas)
 ```
 
 **What is the frequency of each commodity series?**
@@ -43,6 +46,9 @@ Hint: apply the `frequency()` function.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
+frequency(gold)
+frequency(woolyrnq)
+frequency(gas)
 
 ```
 
@@ -51,7 +57,7 @@ Use `which.max()` to spot the outlier in the `gold` series.
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+which.max(gold)
 ```
 
 # Exercise 2 
@@ -69,12 +75,14 @@ We convert the data to time series. The `[,-1]` removes the first column which c
 
 ```{r, echo=TRUE, cache=TRUE}
 mytimeseries <- ts(tute1[, -1], start = 1981, frequency = 4)
+
 ```
 
 Construct time series plots of each of the three series and use 'facets = TRUE' .
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
+autoplot(mytimeseries, facets = TRUE)
 
 ```
 
@@ -82,6 +90,7 @@ Check what happens when you don't include `facets=TRUE`.
 
 ```{r, echo=TRUE, cache=TRUE, dependson="exmyts"}
 # to do
+autoplot(mytimeseries)
 
 ```
 
@@ -100,19 +109,25 @@ The second argument (`skip=1`) is required because the Excel sheet has two heade
 Select one of the time series as follows (but replace the column name with your own chosen column):
 
 ```{r, echo=TRUE, cache=TRUE}
-myts <- ts(retaildata[, "A3349873A"], frequency = 12, start = c(1982, 4))
+myts <- ts(retaildata[, "A3349627V"], frequency = 12, start = c(1982, 4))
+plot(myts)
 ```
 
 Explore your chosen retail time series using the following functions: `autoplot`, `ggseasonplot`, `ggsubseriesplot`, `gglagplot`, `ggAcf`
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(myts)
+ggseasonplot(myts)
+ggsubseriesplot(myts)
+gglagplot(myts)
+ggAcf(myts)
 ```
 
 **Can you spot any seasonality, cyclicity and trend? What do you learn about the series?**
 
 Your answer:
+Die Zeitreihe gibt den Verkauf von hartem Alkohol in New south Wales an. Es zeigt sich der Trend, dass über die Zeit der Alkoholverbraucht generell steigt. Eine Seasonalität bzw cyclische Abhängigkeit ist auch erkennbar. Immer im Dezember steigt der Alkoholverbrauch stark an, was möglicherweise mit dem Jahresende und Weihnachten zusammenhängen kann.
 
 
 # Exercise 4
@@ -123,6 +138,11 @@ Create time plots of the following time series: goog, writing, fancy, a10, h02.
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 # to do
+ autoplot(goog)
+autoplot(writing)
+autoplot(fancy)
+autoplot(a10)
+autoplot(h02)
 
 ```
 
@@ -135,38 +155,46 @@ Use the `ggseasonplot` and `ggsubseriesplot` functions to explore the seasonal p
 ```{r, echo=TRUE}
 # writing
 # to do
-
+ggseasonplot(writing)
+ggsubseriesplot(writing)
 ```
 
 Your answer:
+Über die Jahre zeigt sich ein ansteigender Trend. Ungewöhnliche Jahre sind nicht zu erkennen. Seasonale Muster sind erkennbar, immer im August ist ein starker Einbruch der Zahlen erkennbar.
+
+
 
 
 ```{r, echo=TRUE}
 # fancy
 # to do
-
+ggseasonplot(fancy)
+ggsubseriesplot(fancy)
 ```
 
 Your answer:#
+Es ist ein Anstieg über die Jahre erkennbar, ungewöhnliche Jahre lassen sich nicht identifizieren. Als Seasonale Abhängigkeit kann man erkennen, dass die Werte immer im Dezember am höchsten sind und im Januar am niedrigsten. Mehrere Jahre scheinen ein kleines lokales Maximum im Mörz aufzuweisen, wobei dies jedoch nicht für alle Jahre konsistent und eindeutig ist.
 
 
 ```{r, echo=TRUE}
 # a10
 # to do
-
+ggseasonplot(a10)
+ggsubseriesplot(a10)
 ```
 
 Your answer:
-
+erneut ist  Erkennbar dass die Werte tendenziell über die Jahre steigen, und eine cyclische bzw. Seasonale Abhängigkeit ist ebenfalls erkennbar. So sind die Werte immer Im Januar am höchsten und im Februar am geringsten. Der Einbruch von Januar auf Februar nimmer über die Jahre zu. für den rest des jeweiligen Jahres ist ein leicht ansteigender Trend zu sehen.
 
 ```{r, echo=TRUE}
 # h02
 # to do
-
+ggseasonplot(h02)
+ggsubseriesplot(h02)
 ```
 
 Your answer:
-
+Ähnlich wie bei a10 ist ein Einbruch von Januar auf Februar sowie ein anstieg über das restliche Jahr erkennbar. Abweichungen von diesem Muster bzw. ungewöhnliche Jahre fallen nicht auf. 
 
 # Exercise 5
 Use the following graphics functions: `autoplot`, `ggseasonplot`, `ggsubseriesplot`, `gglagplot`, `ggAcf` and explore features from the following time series: `hsales`, `usdeaths`, `bricksq`, `sunspotarea`, `gasoline`.
@@ -191,35 +219,59 @@ ggAcf(hsales)
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(usdeaths)
+ggseasonplot(usdeaths)
+ggsubseriesplot(usdeaths)
+gglagplot(usdeaths)
+ggAcf(usdeaths)
 ```
 
 Your answer:
 
+Hinweise auf Seasonalität in allen Plots.
+Cyclische Abhängigkeiten
+Kein genereller Trend erkennbar
+Anstieg im Sommer und Abfall im Winter
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(bricksq)
+ggseasonplot(bricksq)
+ggsubseriesplot(bricksq)
+gglagplot(bricksq)
+ggAcf(bricksq)
 ```
 
 Your answer:
-
+Genereller Trend erkennbar, steigend von 1955 bis 1975, danach zwei Einbrüche die den Trend unterbrechen und die Werte immer wieder auf dem selben Niveau stabilisieren.
+Geringe seasonalität erkennbar, Gegen drittem Quartal meistens am höchsten
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(sunspotarea)
+#ggseasonplot(sunspotarea)
+#ggsubseriesplot(sunspotarea)
+gglagplot(sunspotarea)
+ggAcf(sunspotarea)
 ```
 
 Your answer:
-
+klare Hinweise auf Seasonale Abhängigkeit.
+kein Genereller Trend erkennbar,
+scheinbar Periodizität im Seasonalen Musster von 12 Monaten, Im Winter Gering, im Sommer hohe Werte 
 
 ```{r, echo=TRUE, cache=TRUE}
 # to do
-
+autoplot(gasoline)
+ggseasonplot(gasoline)
+#ggsubseriesplot(gasoline)
+gglagplot(gasoline)
+ggAcf(gasoline)
 ```
 
 Your answer:
-
+Periodizität scheinbar vorhanden, hohes rauschen erkennbar, ansteigende Trendkurve von 1990 bis 2005, da nach geringer abfall mit anschließendem leichten Anstieg, wobei die Volatilität scheinbar zunimmt. Keine eindeutige Seasonale Abhängigkeit erkennbar, 
+Schwankungen sind sehr hochfrequent 
 
 # Exercise 6
 
@@ -239,10 +291,14 @@ ggAcf(y)
 
 ```{r, echo=TRUE, cache=TRUE}
 # todo
+mypigs <- window(pigs, start=1990)
+autoplot(mypigs)
+ggAcf(mypigs)
 
 ```
 
 Your answer:
+Vergleicht man den reinen Kurvenverlauf des Autoplots beider Datensätze, so lässt sich bei beiden Datensätzen keine klare Periodizität und kein Trend erkennen. Auffallenster Unterschied ist, dass White Noise um null schwankt während alle Daten der Schweine zwischen 60.000 und 120.000 liegen. Ebenso scheint es eine kleinere signifikante Korrelation zwischen den jeweils aktuellen Werten und ihren 3 vorherigen Werten zu geben, was auf ein Muster hindeutet, das zwar durch rein visuelle Betrachtung nicht erkennbar ist, jedoch beim White noise plot so überhaupt nicht zu sehen ist.
 
 
 # Exercise 7
@@ -251,8 +307,12 @@ Your answer:
 
 ```{r}
 # todo
-
+ddj <- diff(dj)
+autoplot(dj)
+autoplot(ddj)
+ggAcf(dj)
+ggAcf(ddj)
 ```
 
 Your answer:
-
+Meiner Ansicht nach sehen die Änderungen sehr nach White Noise aus, da bei beim Acfplot die Werte unter der Grenze von 0.1 liegen und somit auf den ersten Blick als nicht signifikant erscheinen. 
